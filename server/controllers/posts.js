@@ -1,6 +1,10 @@
+import mongoose from 'mongoose';
+import express from 'express';
 import PostMessage from "../models/postMessage.js";
 
-export const getPost = async (req, res) => {
+const router = express.Router();
+
+export const getPosts = async (req, res) => {
     try {
         const postMessages = await PostMessage.find();
 
@@ -12,7 +16,7 @@ export const getPost = async (req, res) => {
 
 export const createPost = async (req, res) => {
     const post = req.body;    // here we are requesting the body from the client side
-
+    
     const newPost = new PostMessage(post);
 
     try {
@@ -23,3 +27,42 @@ export const createPost = async (req, res) => {
         res.status(409).json({ message: error.message });
     }
 }
+
+export const updatePost = async (req, res) => {
+    const { id } = req.params;
+    // now we need to request it from the client side to get the id first and then the post so first we need to keep track of 
+    // the current id in app.js of client because we have to share that current state of Id b/w the post and the form
+    // and app.js is the only parent component i.e, parent to both posts and form and later on we will do it using redux
+    const { title, message, creator, selectedFile, tags } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No post with id: ${id}`);
+
+    const updatedPost = { creator, title, message, tags, selectedFile, _id: id };
+
+    await PostMessage.findByIdAndUpdate(id, updatedPost, { new: true });
+
+    res.json(updatedPost);
+}
+
+export const deletePost = async (req, res) => {
+    const { id } = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id))   return res.status(404).send('No post with that id');
+
+    await PostMessage.findByIdAndRemove(id);
+
+    res.json({ message : 'Post deleted successfully'})
+}
+
+export const likePost = async (req, res) => {
+    const { id } = req.params;
+
+    if(!mongoose.Types.ObjectId.isValid(id))   return res.status(404).send('No post with that id');
+
+    const post = await PostMessage.findById(id);
+    const updatedPost = await PostMessage.findByIdAndUpdate(id, { likeCount: post.likeCount + 1 }, { new : true });
+
+    res.json(updatedPost);
+}
+
+export default router;
