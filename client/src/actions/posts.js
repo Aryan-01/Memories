@@ -12,6 +12,7 @@ export const getPosts = () => async (dispatch) => {
   }
 }
 
+// if actions or action creators are asynchronous then we have to use redux thunks
 export const createPost = (post) => async (dispatch) => {
   try {
     const { data } = await api.createPost(post);
