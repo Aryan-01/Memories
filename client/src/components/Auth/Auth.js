@@ -38,7 +38,7 @@ const Auth = () => {
 
   const switchMode = () => {
       setIsSignup((prevIsSignup) => !prevIsSignup);
-      handleShowPassword(false);
+      setShowPassword(false);
   }
 
   const googleSuccess = async (res) => {
@@ -106,24 +106,3 @@ const Auth = () => {
 }
 
 export default Auth
-
-// eslint-disable-next-line
-{/*
-                <GoogleLogin
-                    clientId="564033717568-e5p23rhvcs4i6kffgsbci1d64r8hp6fn.apps.googleusercontent.com"
-                    render={(renderProps) => (
-                    <Button className={classes.googleButton} color="primary" fullWidth onClick={renderProps.onClick} disabled={renderProps.disabled} startIcon={<Icon />} variant="contained">
-                        Google Sign In
-                    </Button>
-                    )}
-                    onSuccess={googleSuccess}
-                    onFailure={googleError}
-                    cookiePolicy="single_host_origin"
-                />
-                <Grid container justify="flex-end">
-                    <Grid item>
-                    <Button onClick={switchMode}>
-                        { isSignup ? 'Already have an account? Sign in' : "Don't have an account? Sign Up" }
-                    </Button>
-                    </Grid>
-                </Grid> */}
