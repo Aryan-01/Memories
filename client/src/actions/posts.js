@@ -1,12 +1,15 @@
-import { FETCH_ALL, FETCH_BY_SEARCH, CREATE, UPDATE, DELETE } from '../constants/actionTypes';
+import { FETCH_ALL, FETCH_BY_SEARCH, START_LOADING, END_LOADING, CREATE, UPDATE, DELETE } from '../constants/actionTypes';
 
 import * as api from '../api/index.js';
 
-export const getPosts = () => async (dispatch) => {
+export const getPosts = (page) => async (dispatch) => {
   try {
-    const { data } = await api.fetchPosts();
+    dispatch({ type: START_LOADING });
+    const { data } = await api.fetchPosts(page);
 
     dispatch({ type: FETCH_ALL, payload: data });
+    
+    dispatch({ type: END_LOADING });
   } catch (error) {
     console.log(error);
   }
@@ -14,6 +17,7 @@ export const getPosts = () => async (dispatch) => {
 
 export const getPostsBySearch = (searchQuery) => async (dispatch) => {
   try {
+    dispatch({ type: START_LOADING });
     // here we try to communicate to our backend and get the data
     const { data: { data } } = await api.fetchPostsBySearch(searchQuery);
     
@@ -26,6 +30,8 @@ export const getPostsBySearch = (searchQuery) => async (dispatch) => {
 // if actions or action creators are asynchronous then we have to use redux thunks
 export const createPost = (post) => async (dispatch) => {
   try {
+    dispatch({ type: START_LOADING });
+
     const { data } = await api.createPost(post);
 
     dispatch({ type: CREATE, payload: data });
