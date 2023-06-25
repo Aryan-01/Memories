@@ -14,6 +14,24 @@ export const getPosts = async (req, res) => {
     }
 }
 
+// QUERY -> /posts?page=1 means page = 1 (usually used when we want to query some data like search)
+// PARAMS -> /posts/123 means id = 123 (usually used when we want some specific resource)
+export const getPostsBySearch = async (req, res) => {
+    const { searchQuery, tags } = req.query;
+
+    try {
+        // we convert the query in regular exp because its easier to search in the database for mongoDB and mongoose
+        const title = new RegExp(searchQuery, 'i') //'i' is used for ignoring the style like (like, LIKE, Like) all are equal to like
+
+        const posts = await PostMessage.find({ $or: [ { title }, { tags: { $in: tags.split(',') }}] }) // find me the posts that match either the title
+        // or any of the tags that are in the array of the tags 
+        
+        res.json({ data: posts });
+    } catch (error) {
+        res.status(404).json({ message: error.message });
+    }
+}
+
 export const createPost = async (req, res) => {
     const post = req.body;    // here we are requesting the body from the client side
     

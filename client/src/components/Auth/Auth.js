@@ -54,7 +54,7 @@ const Auth = () => {
       }
   }
 
-  const googleError = (error) => {
+  const googleError = () => {
       console.log('Google login failed, try again!');
   }
 
