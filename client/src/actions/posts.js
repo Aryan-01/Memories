@@ -1,4 +1,4 @@
-import { FETCH_ALL, FETCH_POST, FETCH_BY_SEARCH, START_LOADING, END_LOADING, CREATE, UPDATE, DELETE } from '../constants/actionTypes';
+import { FETCH_ALL, FETCH_POST, FETCH_BY_SEARCH, START_LOADING, END_LOADING, CREATE, UPDATE, DELETE, COMMENT } from '../constants/actionTypes';
 
 import * as api from '../api/index.js';
 
@@ -45,7 +45,7 @@ export const createPost = (post, history) => async (dispatch) => {
     dispatch({ type: START_LOADING });
 
     const { data } = await api.createPost(post);
-    
+
     history.push(`/posts/${data._id}`)
 
     dispatch({ type: CREATE, payload: data });
@@ -75,11 +75,26 @@ export const deletePost = (id) => async (dispatch) => {
 }
 
 export const likePost = (id) => async (dispatch) => {
+  const user = JSON.parse(localStorage.getItem('profile'));
+
   try {
-    const { data } = await api.likePost(id);
+    const { data } = await api.likePost(id, user?.token);
 
     dispatch({ type: UPDATE, payload: data });
   } catch (error) {
     console.log(error.message);
+  }
+}
+
+export const commentPost = (value, id) => async (dispatch) => {
+  try {
+    const { data } = await api.comment(value, id); // here we get the dat from the backend after calling the api
+
+    dispatch({ type: COMMENT, payload: data }); // now we just have to deal with this data in our redux then send our 
+    //comments back to the comment section where we'll be able to fetch them
+
+    return data.comments; // returning the neweset comment
+  } catch (error) {
+    console.log(error); 
   }
 }

@@ -115,4 +115,18 @@ export const likePost = async (req, res) => {
     res.json(updatedPost);
 }
 
+export const commentPost = async (req, res) => {
+    const { id } = req.params;
+    const { value } = req.body;
+
+    // fetching the post that we have put our comment on
+    const post = await PostMessage.findById(id); // getting the post from the database
+
+    post.comments.push(value); // adding the comment to the post
+
+    const updatedPost = await PostMessage.findByIdAndUpdate(id, post, { new : true }); // updating the database so that the new post contains that new comment 
+
+    res.json(updatedPost); // we recieve this on the frontend
+}
+
 export default router;
